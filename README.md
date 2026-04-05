@@ -39,7 +39,7 @@ Connect real wallets. Cast real votes. Track real transactions. All in real-time
 
 ## 🌟 Overview
 
-StellarVote is a **Level-2 compliant** Web3 dApp that lets users vote on a live blockchain poll using their Stellar wallet. Every vote is an actual transaction submitted to the **Stellar Soroban Testnet**, stored permanently on-chain via a custom Rust smart contract.
+Stellar-livepoll(stellarvote) is a **Level-2 compliant** Web3 dApp that lets users vote on a live blockchain poll using their Stellar wallet. Every vote is an actual transaction submitted to the **Stellar Soroban Testnet**, stored permanently on-chain via a custom Rust smart contract.
 
 The app supports **three wallets** (Freighter, Albedo, xBull), shows a real-time transaction lifecycle (sign → broadcast → ledger confirm), prevents double-voting at the contract level, and polls the chain every **2 seconds** to keep vote counts live.
 
@@ -428,8 +428,8 @@ stellarvote/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/stellarvote.git
-cd stellarvote
+https://github.com/Rohit-tiwari9/stellar-livepoll
+cd stellar-livepoll
 ```
 
 ### 2. No Build Step Required
@@ -442,27 +442,10 @@ open index.html
 
 # Option B — local static server
 npx serve .
-# or
-python3 -m http.server 3000
-
 # Option C — VS Code Live Server extension
 # Right-click index.html → Open with Live Server
 ```
 
-### 3. Deploy to Vercel (Recommended)
-
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy (from project root)
-vercel
-
-# Follow prompts — select "No framework" when asked
-# Your app will be live at https://stellarvote.vercel.app
-```
-
----
 
 ## 📦 Deploy the Contract
 
