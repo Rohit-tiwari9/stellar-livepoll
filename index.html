@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StellarVote — Live Blockchain Poll</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='28' font-size='28'>✦</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- AMBIENT BACKGROUND -->
+  <div class="ambient" aria-hidden="true">
+    <div class="amb-mesh"></div>
+    <div class="amb-orb amb-orb--1"></div>
+    <div class="amb-orb amb-orb--2"></div>
+    <div class="amb-orb amb-orb--3"></div>
+    <canvas class="amb-stars" id="starsCanvas"></canvas>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TOPBAR
+  ══════════════════════════════════════════ -->
+  <div class="topbar">
+    <div class="topbar__inner">
+      <div class="brand">
+        <span class="brand__hex">⬡</span>
+        <span class="brand__name">StellarVote</span>
+        <span class="brand__chip">SOROBAN · TESTNET</span>
+      </div>
+
+      <div class="contract-pill" id="contractPill">
+        <span class="contract-pill__label">CONTRACT</span>
+        <span class="contract-pill__addr" id="contractAddr">Loading...</span>
+        <a class="contract-pill__link" id="explorerLink" href="#" target="_blank">↗</a>
+      </div>
+
+      <div class="wallet-zone" id="walletZone">
+        <div class="wallet-indicator">
+          <span class="wallet-indicator__dot" id="wDot"></span>
+          <span class="wallet-indicator__text" id="wText">Not Connected</span>
+        </div>
+        <button class="btn btn--connect" id="btnConnect" onclick="UI.openWalletModal()">
+          Connect Wallet
+        </button>
+        <div class="wallet-chip hidden" id="walletChip">
+          <div class="wallet-chip__icon" id="chipIcon">?</div>
+          <div class="wallet-chip__info">
+            <span class="wallet-chip__type" id="chipType">—</span>
+            <span class="wallet-chip__addr" id="chipAddr">—</span>
+          </div>
+          <button class="wallet-chip__dc" onclick="Wallet.disconnect()" title="Disconnect">✕</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       HERO STRIP
+  ══════════════════════════════════════════ -->
+  <section class="hero">
+    <div class="hero__inner">
+      <div class="hero__eyebrow">
+        <span class="live-badge"><span class="live-badge__dot"></span>LIVE ON-CHAIN</span>
+        <span class="hero__sep">·</span>
+        <span class="hero__voters" id="heroVoters">— votes cast</span>
+        <span class="hero__sep">·</span>
+        <span class="hero__sync" id="heroSync">Syncing...</span>
+      </div>
+      <h1 class="hero__title">
+        Which Language Is Best for
+        <span class="hero__title-em">Web3 & Modern Development?</span>
+      </h1>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       MAIN GRID
+  ══════════════════════════════════════════ -->
+  <main class="app-grid">
+
+    <!-- LEFT: VOTE PANEL -->
+    <section class="vote-panel" id="votePanel">
+
+      <!-- OPTION: RUST -->
+      <div class="option-card" data-opt="rust" id="card-rust">
+        <div class="option-card__accent option-card__accent--rust"></div>
+        <div class="option-card__head">
+          <div class="option-card__ident">
+            <span class="option-card__emoji">🦀</span>
+            <div>
+              <div class="option-card__name">Rust</div>
+              <div class="option-card__sub">Systems & Safety</div>
+            </div>
+          </div>
+          <div class="option-card__meta">
+            <span class="option-card__count" id="count-rust">0</span>
+            <span class="option-card__pct" id="pct-rust">0%</span>
+          </div>
+        </div>
+        <div class="option-card__bar-track">
+          <div class="option-card__bar option-card__bar--rust" id="bar-rust" style="width:0%"></div>
+        </div>
+        <button class="vote-btn vote-btn--rust" id="vbtn-rust" onclick="Vote.cast('rust')" disabled>
+          <span class="vote-btn__inner">
+            <span class="vote-btn__label">Cast Vote</span>
+            <span class="vote-btn__arrow">→</span>
+          </span>
+          <span class="vote-btn__loading hidden">
+            <span class="micro-spin"></span>
+          </span>
+        </button>
+      </div>
+
+      <!-- OPTION: JS/TS -->
+      <div class="option-card" data-opt="js" id="card-js">
+        <div class="option-card__accent option-card__accent--js"></div>
+        <div class="option-card__head">
+          <div class="option-card__ident">
+            <span class="option-card__emoji">⚡</span>
+            <div>
+              <div class="option-card__name">JavaScript / TypeScript</div>
+              <div class="option-card__sub">Web & Universal</div>
+            </div>
+          </div>
+          <div class="option-card__meta">
+            <span class="option-card__count" id="count-js">0</span>
+            <span class="option-card__pct" id="pct-js">0%</span>
+          </div>
+        </div>
+        <div class="option-card__bar-track">
+          <div class="option-card__bar option-card__bar--js" id="bar-js" style="width:0%"></div>
+        </div>
+        <button class="vote-btn vote-btn--js" id="vbtn-js" onclick="Vote.cast('js')" disabled>
+          <span class="vote-btn__inner">
+            <span class="vote-btn__label">Cast Vote</span>
+            <span class="vote-btn__arrow">→</span>
+          </span>
+          <span class="vote-btn__loading hidden">
+            <span class="micro-spin"></span>
+          </span>
+        </button>
+      </div>
+
+      <!-- OPTION: PYTHON -->
+      <div class="option-card" data-opt="python" id="card-python">
+        <div class="option-card__accent option-card__accent--python"></div>
+        <div class="option-card__head">
+          <div class="option-card__ident">
+            <span class="option-card__emoji">🐍</span>
+            <div>
+              <div class="option-card__name">Python</div>
+              <div class="option-card__sub">AI & Data Science</div>
+            </div>
+          </div>
+          <div class="option-card__meta">
+            <span class="option-card__count" id="count-python">0</span>
+            <span class="option-card__pct" id="pct-python">0%</span>
+          </div>
+        </div>
+        <div class="option-card__bar-track">
+          <div class="option-card__bar option-card__bar--python" id="bar-python" style="width:0%"></div>
+        </div>
+        <button class="vote-btn vote-btn--python" id="vbtn-python" onclick="Vote.cast('python')" disabled>
+          <span class="vote-btn__inner">
+            <span class="vote-btn__label">Cast Vote</span>
+            <span class="vote-btn__arrow">→</span>
+          </span>
+          <span class="vote-btn__loading hidden">
+            <span class="micro-spin"></span>
+          </span>
+        </button>
+      </div>
+
+      <!-- OPTION: GO -->
+      <div class="option-card" data-opt="go" id="card-go">
+        <div class="option-card__accent option-card__accent--go"></div>
+        <div class="option-card__head">
+          <div class="option-card__ident">
+            <span class="option-card__emoji">🚀</span>
+            <div>
+              <div class="option-card__name">Go</div>
+              <div class="option-card__sub">Cloud & Concurrency</div>
+            </div>
+          </div>
+          <div class="option-card__meta">
+            <span class="option-card__count" id="count-go">0</span>
+            <span class="option-card__pct" id="pct-go">0%</span>
+          </div>
+        </div>
+        <div class="option-card__bar-track">
+          <div class="option-card__bar option-card__bar--go" id="bar-go" style="width:0%"></div>
+        </div>
+        <button class="vote-btn vote-btn--go" id="vbtn-go" onclick="Vote.cast('go')" disabled>
+          <span class="vote-btn__inner">
+            <span class="vote-btn__label">Cast Vote</span>
+            <span class="vote-btn__arrow">→</span>
+          </span>
+          <span class="vote-btn__loading hidden">
+            <span class="micro-spin"></span>
+          </span>
+        </button>
+      </div>
+
+      <!-- CONNECT NUDGE -->
+      <div class="connect-nudge" id="connectNudge">
+        <span class="connect-nudge__icon">⬡</span>
+        <span>Connect a wallet to cast your on-chain vote</span>
+        <button class="btn btn--connect btn--sm" onclick="UI.openWalletModal()">Connect</button>
+      </div>
+
+    </section>
+
+    <!-- RIGHT: SIDEBAR -->
+    <aside class="sidebar">
+
+      <!-- TRANSACTION TRACKER -->
+      <div class="tx-tracker" id="txTracker">
+        <div class="panel-label">TRANSACTION</div>
+
+        <div class="tx-idle" id="txIdle">
+          <div class="tx-idle__icon">⛓</div>
+          <div class="tx-idle__text">No pending transaction</div>
+        </div>
+
+        <div class="tx-live hidden" id="txLive">
+          <div class="tx-status-row" id="txStatusRow">
+            <span class="tx-status-icon" id="txIcon">⏳</span>
+            <span class="tx-status-text" id="txStatusText">Waiting...</span>
+            <span class="tx-spin" id="txSpin"></span>
+          </div>
+          <div class="tx-step-list" id="txStepList">
+            <div class="tx-step" id="step-sign">
+              <span class="tx-step__dot"></span>
+              <span class="tx-step__label">Wallet signature</span>
+              <span class="tx-step__state" id="ss-sign">—</span>
+            </div>
+            <div class="tx-step" id="step-send">
+              <span class="tx-step__dot"></span>
+              <span class="tx-step__label">Broadcast</span>
+              <span class="tx-step__state" id="ss-send">—</span>
+            </div>
+            <div class="tx-step" id="step-confirm">
+              <span class="tx-step__dot"></span>
+              <span class="tx-step__label">Ledger confirm</span>
+              <span class="tx-step__state" id="ss-confirm">—</span>
+            </div>
+          </div>
+          <div class="tx-hash-row hidden" id="txHashRow">
+            <span class="tx-hash-label">TX HASH</span>
+            <a class="tx-hash-val" id="txHashLink" href="#" target="_blank">—</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- VOTED CONFIRMATION -->
+      <div class="voted-card hidden" id="votedCard">
+        <div class="voted-card__check">✦</div>
+        <div class="voted-card__title">Vote Recorded</div>
+        <div class="voted-card__sub">Your vote is permanently on Stellar Testnet</div>
+        <div class="voted-card__choice" id="votedChoice">—</div>
+      </div>
+
+      <!-- STATS PANEL -->
+      <div class="stats-panel">
+        <div class="panel-label">LIVE STATS</div>
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-box__val" id="statTotal">0</div>
+            <div class="stat-box__key">Total Votes</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-box__val" id="statLeader">—</div>
+            <div class="stat-box__key">Leading</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-box__val" id="statNetwork">Testnet</div>
+            <div class="stat-box__key">Network</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-box__val" id="statLedger">—</div>
+            <div class="stat-box__key">Last Ledger</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TECH INFO -->
+      <div class="tech-panel">
+        <div class="panel-label">STACK</div>
+        <div class="tech-list">
+          <div class="tech-item">
+            <span class="tech-item__icon">🦀</span>
+            <span>Soroban Smart Contract (Rust)</span>
+          </div>
+          <div class="tech-item">
+            <span class="tech-item__icon">⭐</span>
+            <span>Stellar SDK + Soroban RPC</span>
+          </div>
+          <div class="tech-item">
+            <span class="tech-item__icon">👛</span>
+            <span>StellarWalletsKit</span>
+          </div>
+          <div class="tech-item">
+            <span class="tech-item__icon">🔄</span>
+            <span>Real-time 2s polling</span>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+  </main>
+
+  <!-- ══════════════════════════════════════════
+       WALLET MODAL
+  ══════════════════════════════════════════ -->
+  <div class="modal-overlay hidden" id="walletModal" onclick="UI.handleModalOverlay(event)">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Connect Wallet">
+      <button class="modal__close" onclick="UI.closeWalletModal()">✕</button>
+
+      <div class="modal__head">
+        <div class="modal__hex">⬡</div>
+        <h2 class="modal__title">Connect Your Wallet</h2>
+        <p class="modal__sub">Select a Stellar wallet to interact with the blockchain</p>
+      </div>
+
+      <div class="wallet-options">
+        <button class="wallet-opt" id="wopt-freighter" onclick="Wallet.connect('freighter')">
+          <div class="wallet-opt__icon wallet-opt__icon--f">F</div>
+          <div class="wallet-opt__info">
+            <span class="wallet-opt__name">Freighter</span>
+            <span class="wallet-opt__desc">Official Stellar browser extension</span>
+          </div>
+          <div class="wallet-opt__status" id="ws-freighter">Checking...</div>
+          <span class="wallet-opt__caret">→</span>
+        </button>
+
+        <button class="wallet-opt" id="wopt-albedo" onclick="Wallet.connect('albedo')">
+          <div class="wallet-opt__icon wallet-opt__icon--a">A</div>
+          <div class="wallet-opt__info">
+            <span class="wallet-opt__name">Albedo</span>
+            <span class="wallet-opt__desc">Web-based Stellar wallet</span>
+          </div>
+          <div class="wallet-opt__status" id="ws-albedo">Web Wallet</div>
+          <span class="wallet-opt__caret">→</span>
+        </button>
+
+        <button class="wallet-opt" id="wopt-xbull" onclick="Wallet.connect('xbull')">
+          <div class="wallet-opt__icon wallet-opt__icon--x">X</div>
+          <div class="wallet-opt__info">
+            <span class="wallet-opt__name">xBull</span>
+            <span class="wallet-opt__desc">Feature-rich Stellar wallet</span>
+          </div>
+          <div class="wallet-opt__status" id="ws-xbull">Checking...</div>
+          <span class="wallet-opt__caret">→</span>
+        </button>
+      </div>
+
+      <div class="modal__footer">
+        <span class="modal__network-badge">⬡ Stellar Testnet · Soroban</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TOAST CONTAINER
+  ══════════════════════════════════════════ -->
+  <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+  <!-- ══════════════════════════════════════════
+       SCRIPTS — CDN LIBRARIES
+  ══════════════════════════════════════════ -->
+  <!-- Stellar SDK (UMD) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stellar-sdk/12.3.0/stellar-sdk.min.js"
+          integrity="sha512-7cukGiJNB5fKp8xYqYvZqoUjxl2Tm2S2hbJCCOyRtPp7ItBHFSdL3z9oMxBRhKxJFk+6y6EiVcWzSlfrdcWQ=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script src="app.js"></script>
+</body>
+</html>
